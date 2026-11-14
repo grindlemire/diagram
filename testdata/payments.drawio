@@ -1,0 +1,75 @@
+<mxfile host="diagram" pages="1">
+  <diagram id="page-1" name="Payments">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="840" pageHeight="356" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="web-app" value="Web app&lt;br&gt;&lt;span style=&quot;font-size:12px;font-weight:400;color:#64748b&quot;&gt;Next.js&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=52;spacingBottom=12;align=center;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="24" y="127.7" width="96" height="99.8" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-app#icon" value="" style="shape=image;imageAspect=0;aspect=fixed;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ZjQ2ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHJ4PSIyIi8+PHBhdGggZD0iTTEwIDR2NCIvPjxwYXRoIGQ9Ik0yIDhoMjAiLz48cGF0aCBkPSJNNiA0djQiLz48L3N2Zz4=;connectable=0;" vertex="1" parent="web-app">
+          <mxGeometry x="32" y="12" width="32" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc" value="Production VPC&lt;br&gt;&lt;span style=&quot;font-size:12px;font-weight:400;color:#64748b&quot;&gt;us-east-1&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=24;fillColor=#f8fafc;strokeColor=#cbd5e1;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;spacing=0;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=13;fontColor=#0f172a;fontStyle=1;verticalAlign=top;spacingTop=20;align=left;spacingLeft=48;" vertex="1" parent="1">
+          <mxGeometry x="192.46" y="24" width="437.38" height="307.2" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc#icon" value="" style="shape=image;imageAspect=0;aspect=fixed;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ZjQ2ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTcuNSAxOUg5YTcgNyAwIDEgMSA2LjcxLTloMS43OWE0LjUgNC41IDAgMSAxIDAgOVoiLz48L3N2Zz4=;connectable=0;" vertex="1" parent="production-vpc">
+          <mxGeometry x="20" y="27.25" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/api" value="API&lt;br&gt;&lt;span style=&quot;font-size:12px;font-weight:400;color:#64748b&quot;&gt;Go · 3 replicas&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=12;spacingBottom=12;align=left;spacingLeft=56;spacingRight=8;" vertex="1" parent="production-vpc">
+          <mxGeometry x="141.82" y="70.5" width="153.74" height="59.8" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/api#icon" value="" style="shape=image;imageAspect=0;aspect=fixed;image=data:image/svg+xml,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0iIzRmNDZlNSI+PHBhdGggZD0iTTEuODExIDEwLjIzMWMtLjA0NyAwLS4wNTgtLjAyMy0uMDM1LS4wNTlsLjI0Ni0uMzE1Yy4wMjMtLjAzNS4wODEtLjA1OC4xMjgtLjA1OGg0LjE3MmMuMDQ2IDAgLjA1OC4wMzUuMDM1LjA3bC0uMTk5LjMwM2MtLjAyMy4wMzYtLjA4Mi4wNy0uMTE3LjA3ek0uMDQ3IDExLjMwNmMtLjA0NyAwLS4wNTktLjAyMy0uMDM1LS4wNThsLjI0NS0uMzE2Yy4wMjMtLjAzNS4wODItLjA1OC4xMjktLjA1OGg1LjMyOGMuMDQ3IDAgLjA3LjAzNS4wNTguMDdsLS4wOTMuMjhjLS4wMTIuMDQ3LS4wNTguMDctLjEwNS4wN3ptMi44MjggMS4wNzVjLS4wNDcgMC0uMDU5LS4wMzUtLjAzNS0uMDdsLjE2My0uMjkyYy4wMjMtLjAzNS4wNy0uMDcuMTE3LS4wN2gyLjMzN2MuMDQ3IDAgLjA3LjAzNS4wNy4wODJsLS4wMjMuMjhjMCAuMDQ3LS4wNDcuMDgyLS4wODIuMDgyem0xMi4xMjktMi4zNmMtLjczNi4xODctMS4yMzkuMzI3LTEuOTYzLjUxNC0uMTc2LjA0Ni0uMTg3LjA1OC0uMzQtLjExNy0uMTc0LS4xOTktLjMwMy0uMzI3LS41NDgtLjQ0NC0uNzM3LS4zNjItMS40NS0uMjU3LTIuMTE1LjE3NS0uNzk1LjUxNC0xLjIwNCAxLjI3NC0xLjE5MiAyLjIyLjAxMS45MzUuNjU0IDEuNzA2IDEuNTc3IDEuODM1Ljc5NS4xMDUgMS40Ni0uMTc1IDEuOTg3LS43Ny4xMDUtLjEzLjE5OC0uMjcuMzE1LS40MzRIMTAuNDdjLS4yNDUgMC0uMzA0LS4xNTItLjIyMi0uMzUuMTUyLS4zNjIuNDMyLS45Ny41OTYtMS4yNzRhLjMxNS4zMTUgMCAwMS4yOTItLjE4N2g0LjI1M2MtLjAyMy4zMTYtLjAyMy42MzEtLjA3Ljk0N2E0Ljk4MyA0Ljk4MyAwIDAxLS45NTggMi4yOWMtLjg0MSAxLjExLTEuOTQgMS44LTMuMzMgMS45ODYtMS4xNDUuMTUyLTIuMjA5LS4wNy0zLjE0My0uNzctLjg2NS0uNjU1LTEuMzU2LTEuNTItMS40ODQtMi41OTUtLjE1Mi0xLjI3NC4yMjItMi40MTkuOTkzLTMuNDI0LjgzLTEuMDg2IDEuOTI4LTEuNzc2IDMuMjcyLTIuMDIgMS4wOTgtLjIgMi4xNS0uMDcgMy4wOTYuNTcxLjYyLjQxIDEuMDYzLjk3IDEuMzU2IDEuNjQ4LjA3LjEwNS4wMjMuMTY0LS4xMTcuMm0zLjg2OCA2LjQ2MWMtMS4wNjQtLjAyNC0yLjAzNC0uMzI4LTIuODUyLTEuMDI5YTMuNjY1IDMuNjY1IDAgMDEtMS4yNjItMi4yNTVjLS4yMS0xLjMyLjE1Mi0yLjQ4OS45NDctMy41MjkuODUzLTEuMTIyIDEuODgxLTEuNzA2IDMuMjcyLTEuOTUgMS4xOTItLjIxIDIuMzE0LS4wOTUgMy4zMy41OTUuOTIzLjYzIDEuNDk2IDEuNDg0IDEuNjQ4IDIuNjA1LjE5OCAxLjU3OC0uMjU3IDIuODYzLTEuMzQ0IDMuOTYyLS43NzEuNzgzLTEuNzE4IDEuMjczLTIuODA1IDEuNDk1LS4zMTUuMDYtLjYzLjA3LS45MzQuMTA2em0yLjc4LTQuNzJjLS4wMTEtLjE1My0uMDExLS4yNy0uMDM0LS4zODctLjIxLTEuMTU3LTEuMjc0LTEuODEtMi4zODQtMS41NTQtMS4wODcuMjQ1LTEuNzg4LjkzNS0yLjA0NSAyLjAzMy0uMjEuOTEyLjIzNCAxLjgzNSAxLjA3NSAyLjIxLjY0My4yOCAxLjI4NS4yNDQgMS45MDUtLjA3LjkyMy0uNDggMS40MjUtMS4yMjggMS40ODQtMi4yMzN6Ii8+PC9zdmc+;connectable=0;" vertex="1" parent="production-vpc/api">
+          <mxGeometry x="16" y="13.9" width="32" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/workers" value="Workers" style="rounded=1;absoluteArcSize=1;arcSize=24;fillColor=#f1f5f9;strokeColor=#cbd5e1;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;spacing=0;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=13;fontColor=#0f172a;fontStyle=1;verticalAlign=top;spacingTop=20;align=left;spacingLeft=20;" vertex="1" parent="production-vpc">
+          <mxGeometry x="20" y="170.3" width="397.38" height="116.9" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/workers/ledger-worker" value="Ledger worker" style="rounded=1;absoluteArcSize=1;arcSize=16;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=12.9;spacingBottom=12.9;align=left;spacingLeft=44;spacingRight=8;" vertex="1" parent="production-vpc/workers">
+          <mxGeometry x="20" y="52.9" width="158.69" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/workers/ledger-worker#icon" value="" style="shape=image;imageAspect=0;aspect=fixed;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ZjQ2ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTEgMTAuMjcgNyAzLjM0Ii8+PHBhdGggZD0ibTExIDEzLjczLTQgNi45MyIvPjxwYXRoIGQ9Ik0xMiAyMnYtMiIvPjxwYXRoIGQ9Ik0xMiAydjIiLz48cGF0aCBkPSJNMTQgMTJoOCIvPjxwYXRoIGQ9Im0xNyAyMC42Ni0xLTEuNzMiLz48cGF0aCBkPSJtMTcgMy4zNC0xIDEuNzMiLz48cGF0aCBkPSJNMiAxMmgyIi8+PHBhdGggZD0ibTIwLjY2IDE3LTEuNzMtMSIvPjxwYXRoIGQ9Im0yMC42NiA3LTEuNzMgMSIvPjxwYXRoIGQ9Im0zLjM0IDE3IDEuNzMtMSIvPjxwYXRoIGQ9Im0zLjM0IDcgMS43MyAxIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjgiLz48L3N2Zz4=;connectable=0;" vertex="1" parent="production-vpc/workers/ledger-worker">
+          <mxGeometry x="16" y="12" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/workers/payout-worker" value="Payout worker" style="rounded=1;absoluteArcSize=1;arcSize=16;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=12.9;spacingBottom=12.9;align=left;spacingLeft=44.09;spacingRight=8.09;" vertex="1" parent="production-vpc/workers">
+          <mxGeometry x="218.69" y="52.9" width="158.69" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="production-vpc/workers/payout-worker#icon" value="" style="shape=image;imageAspect=0;aspect=fixed;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ZjQ2ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTEgMTAuMjcgNyAzLjM0Ii8+PHBhdGggZD0ibTExIDEzLjczLTQgNi45MyIvPjxwYXRoIGQ9Ik0xMiAyMnYtMiIvPjxwYXRoIGQ9Ik0xMiAydjIiLz48cGF0aCBkPSJNMTQgMTJoOCIvPjxwYXRoIGQ9Im0xNyAyMC42Ni0xLTEuNzMiLz48cGF0aCBkPSJtMTcgMy4zNC0xIDEuNzMiLz48cGF0aCBkPSJNMiAxMmgyIi8+PHBhdGggZD0ibTIwLjY2IDE3LTEuNzMtMSIvPjxwYXRoIGQ9Im0yMC42NiA3LTEuNzMgMSIvPjxwYXRoIGQ9Im0zLjM0IDE3IDEuNzMtMSIvPjxwYXRoIGQ9Im0zLjM0IDcgMS43MyAxIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjgiLz48L3N2Zz4=;connectable=0;" vertex="1" parent="production-vpc/workers/payout-worker">
+          <mxGeometry x="16.09" y="12" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="column-3/postgres" value="Postgres&lt;br&gt;&lt;span style=&quot;font-size:12px;font-weight:400;color:#64748b&quot;&gt;primary&lt;/span&gt;" style="shape=cylinder3;size=7.68;backgroundOutline=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=27.36;spacingBottom=12;align=center;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="710.74" y="24" width="96" height="75.16" as="geometry"/>
+        </mxCell>
+        <mxCell id="column-3/events" value="Events" style="shape=cylinder3;direction=south;anchorPointDirection=0;size=8.44;backgroundOutline=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;html=1;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=14;fontColor=#0f172a;fontStyle=1;spacing=0;whiteSpace=wrap;verticalAlign=middle;spacingTop=12;spacingBottom=12;align=center;spacingLeft=8;spacingRight=24.88;" vertex="1" parent="1">
+          <mxGeometry x="702.3" y="139.16" width="112.88" height="42.2" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge:web-app-&gt;production-vpc/api" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=12;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;startArrow=none;exitX=1;exitY=0.1333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.7776;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=11;fontColor=#64748b;fontStyle=0;labelBackgroundColor=#ffffff;labelPadding=4;" edge="1" parent="1" source="web-app" target="production-vpc/api">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge:production-vpc/api-&gt;production-vpc/workers/ledger-worker" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=12;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;startArrow=none;exitX=0.185;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.8208;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="production-vpc/api" target="production-vpc/workers/ledger-worker">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge:production-vpc/api-&gt;production-vpc/workers/payout-worker" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=12;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=1.5;dashed=1;dashPattern=5 3;endArrow=block;endFill=1;endSize=8;startArrow=none;exitX=0.815;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.1792;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="production-vpc/api" target="production-vpc/workers/payout-worker">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge:production-vpc/workers/ledger-worker-&gt;column-3/postgres" value="writes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=12;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#dc2626;strokeWidth=2;endArrow=block;endFill=1;endSize=10.67;startArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Inter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DInter%3A400%2C600;fontSize=11;fontColor=#64748b;fontStyle=0;labelBackgroundColor=#ffffff;labelPadding=4;" edge="1" parent="1" source="production-vpc/workers/ledger-worker" target="column-3/postgres">
+          <mxGeometry x="-0.23" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="411.15" y="269.2"/>
+              <mxPoint x="411.15" y="182.3"/>
+              <mxPoint x="603.84" y="182.3"/>
+              <mxPoint x="603.84" y="61.58"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge:production-vpc/workers/payout-worker-&gt;column-3/events" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=12;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=1.5;dashed=1;dashPattern=1 1.5;endArrow=block;endFill=1;endSize=8;startArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="production-vpc/workers/payout-worker" target="column-3/events">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="758.74" y="269.2"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,5 +1,3 @@
-# diagram
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/header-dark.svg">
   <img alt="diagram: system diagrams as Go code" src="docs/header-light.svg">

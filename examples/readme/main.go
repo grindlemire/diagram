@@ -73,7 +73,7 @@ func banner() *diagram.Diagram {
 	db := card(data, "postgres", brands.Postgres, diagram.Blue)
 	cache := card(data, "redis", brands.Redis, diagram.Hex(brands.RedisColor))
 
-	d.Connect(web, api, diagram.Label("HTTPS"))
+	d.Connect(web, cluster, diagram.Label("HTTPS"))
 	d.Connect(api, db)
 	d.Connect(api, jobs, diagram.Dashed)
 	d.Connect(jobs, cache)

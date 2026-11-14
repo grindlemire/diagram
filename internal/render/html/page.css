@@ -1,0 +1,4 @@
+/* The full page: the view fills the window. */
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--dg-background);color:var(--dg-foreground);font:13px/1.4 var(--dg-ui-font);-webkit-font-smoothing:antialiased}
+#dg-stage,#dg-bar,#dg-path{position:fixed}

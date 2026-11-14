@@ -1,0 +1,26 @@
+/* An embed: a block as wide as its container, sized by a light-DOM rule, */
+/* and cut off from the styles the page would have it inherit. */
+:host{display:block;position:relative;min-height:120px}
+#dg-frame{all:initial;position:absolute;inset:0;display:block;overflow:hidden;border-radius:inherit;
+  background:var(--diagram-background, var(--dg-background));color:var(--dg-foreground);
+  font:13px/1.4 var(--dg-ui-font);-webkit-font-smoothing:antialiased}
+#dg-stage{touch-action:pan-x pan-y}
+#dg-stage:focus-visible{box-shadow:inset 0 0 0 2px var(--dg-accent)}
+
+/* A compact toolbar that shows while the pointer or focus is in the view */
+#dg-bar{top:8px;right:8px;padding:3px;gap:1px;border-radius:9px;transition:opacity .15s ease}
+#dg-bar button{min-width:26px;height:26px}
+#dg-bar svg{width:15px;height:15px}
+.dg-search{height:26px}
+#dg-q{width:96px;font-size:12.5px}
+.dg-search kbd{display:none}
+@media (hover:hover){#dg-frame:not(:hover):not(:focus-within) #dg-bar:not(:focus-within){opacity:0}}
+
+#dg-path{bottom:10px;max-width:calc(100% - 20px)}
+
+/* The hint that a plain wheel scrolls the page */
+#dg-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 14px;border-radius:9px;
+  background:rgb(0 0 0 / .72);color:#fff;font-weight:500;pointer-events:none;opacity:0;transition:opacity .2s ease}
+#dg-hint.dg-show{opacity:1}
+#dg-hint[hidden]{display:none}
+@media (max-width:520px){#dg-q{width:72px}}

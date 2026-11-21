@@ -18,9 +18,4 @@
 
 #dg-path{bottom:10px;max-width:calc(100% - 20px)}
 
-/* The hint that a plain wheel scrolls the page */
-#dg-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 14px;border-radius:9px;
-  background:rgb(0 0 0 / .72);color:#fff;font-weight:500;pointer-events:none;opacity:0;transition:opacity .2s ease}
-#dg-hint.dg-show{opacity:1}
-#dg-hint[hidden]{display:none}
 @media (max-width:520px){#dg-q{width:72px}}

@@ -2,8 +2,8 @@
 // an embed (R is the <diagram-view> element's shadow root). Everything it
 // finds, it finds in R, so views never see each other's elements.
 //
-// cfg: embed (an embedded view: page-relative tooltips, Ctrl/⌘-wheel
-// zoom, keys only while focused), host (an embed's element, whose theme
+// cfg: embed (an embedded view: page-relative tooltips, keys only
+// while focused), host (an embed's element, whose theme
 // attribute holds its theme), keys (where key presses are heard), hash (deep links: '' for the page's own fragment,
 // a name for '#<name>:…', null for none), signal (aborted when the view
 // goes away), view (a pan and zoom to start from).
@@ -21,7 +21,6 @@ const bar = $('dg-bar');
 const banner = $('dg-path');
 const help = $('dg-help');
 const helpBtn = $('dg-keys');
-const hint = $('dg-hint');
 const NS = 'http://www.w3.org/2000/svg';
 const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 const modKey = mac ? '⌘' : 'Ctrl';
@@ -734,23 +733,11 @@ stage.addEventListener('contextmenu', ev => { if (drag) ev.preventDefault(); });
 // A plain wheel, or a two-finger trackpad drag, pans; Shift turns a
 // mouse wheel sideways. Ctrl or ⌘ with the wheel zooms around the
 // pointer, and so does a pinch, which arrives as a wheel event with
-// ctrlKey set, in finer steps. In an embed a plain wheel scrolls the
-// page as usual, and a hint says how to zoom.
-let hintT = 0;
+// ctrlKey set, in finer steps. Embeds behave the same.
 stage.addEventListener('wheel', ev => {
-  const zoom = ev.ctrlKey || ev.metaKey;
-  if (cfg.embed && !zoom) {
-    if (hint) {
-      hint.hidden = false;
-      requestAnimationFrame(() => hint.classList.add('dg-show'));
-      clearTimeout(hintT);
-      hintT = setTimeout(() => hint.classList.remove('dg-show'), 1200);
-    }
-    return;
-  }
   ev.preventDefault();
   const unit = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? size().h : 1;
-  if (!zoom) {
+  if (!ev.ctrlKey && !ev.metaKey) {
     let dx = ev.deltaX * unit, dy = ev.deltaY * unit;
     if (ev.shiftKey && !dx) { dx = dy; dy = 0; }
     panBy(-dx, -dy);
@@ -759,7 +746,6 @@ stage.addEventListener('wheel', ev => {
   const dy = Math.max(-120, Math.min(120, ev.deltaY * unit)), p = local(ev);
   zoomAt(p.x, p.y, Math.exp(-dy * (ev.ctrlKey ? 0.012 : 0.002)));
 }, {passive: false});
-if (hint) hint.textContent = `Use ${modKey} + scroll to zoom`;
 // Safari reports trackpad pinches as gesture events.
 let gScale = 1;
 stage.addEventListener('gesturestart', ev => { ev.preventDefault(); gScale = 1; });

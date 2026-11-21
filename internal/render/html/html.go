@@ -53,13 +53,12 @@ var (
 	uiText = []string{"⌘-click or ⌘-Enter opens directly", "Ctrl-click or Ctrl-Enter opens directly",
 		"Search", "No matches", "0123456789/%·,.:-", "Copy link", "Copied", "Copy failed", "C",
 		"No path between and", " → ", "hop hops", "No directed path; showing undirected"}
-	uiBold   = []string{"Open ↗", "→", "Keyboard shortcuts"}
-	hintText = []string{"Use ⌘ + scroll to zoom", "Use Ctrl + scroll to zoom"}
+	uiBold = []string{"Open ↗", "→", "Keyboard shortcuts"}
 )
 
 // chrome says which controls a view has.
 type chrome struct {
-	embed   bool // an embed: compact toolbar, Ctrl/⌘-wheel zoom
+	embed   bool // an embed: compact toolbar
 	toolbar bool
 	themed  bool // a theme switch
 	linking bool // deep links
@@ -69,12 +68,8 @@ type chrome struct {
 // what they do. [K] is drawn as a key; [Mod] is ⌘ on Apple devices and
 // Ctrl elsewhere.
 func helpFor(c chrome) [][2]string {
-	pan := "drag, scroll or [←][↑][→][↓]"
-	if c.embed {
-		pan = "drag or [←][↑][→][↓]"
-	}
 	rows := [][2]string{
-		{pan, "Pan; hold [Shift] for bigger steps"},
+		{"drag, scroll or [←][↑][→][↓]", "Pan; hold [Shift] for bigger steps"},
 		{"[Mod] scroll, pinch or [+][−]", "Zoom"},
 		{"[0]", "Fit to screen"},
 		{"click or [Enter]", "Focus an element and its connections"},
@@ -107,9 +102,6 @@ func interactiveSVG(sc *scene.Scene, opt Options, c chrome) ([]byte, error) {
 	}
 	if c.linking {
 		extra = append(extra, helpNote)
-	}
-	if c.embed {
-		extra = append(extra, hintText...)
 	}
 	so := svg.Options{
 		Title: opt.Title, EmbedFont: opt.EmbedFont, Interactive: true,
@@ -156,16 +148,13 @@ func Render(w io.Writer, sc *scene.Scene, opt Options) error {
 }
 
 // writeControls writes the view's controls after its stage: the toolbar,
-// path banner, tooltip, wheel hint and shortcut help.
+// path banner, tooltip and shortcut help.
 func writeControls(w *bufio.Writer, c chrome) {
 	if c.toolbar {
 		writeToolbar(w, c)
 	}
 	writePathBanner(w)
 	w.WriteString("<div id=\"dg-tip\" role=\"tooltip\" hidden></div>\n")
-	if c.embed {
-		w.WriteString("<div id=\"dg-hint\" aria-hidden=\"true\" hidden></div>\n")
-	}
 	writeHelp(w, c)
 }
 

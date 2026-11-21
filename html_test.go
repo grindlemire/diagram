@@ -374,7 +374,7 @@ func TestHTMLControls(t *testing.T) {
 			t.Errorf("%s: help lists the theme switch: %v, want %v", c.theme.Name, got, c.themed)
 		}
 		// The page has no embed-only parts.
-		for _, bad := range []string{`id="dg-hint"`, "customElements"} {
+		for _, bad := range []string{"customElements"} {
 			if strings.Contains(page, bad) {
 				t.Errorf("%s: page contains %q", c.theme.Name, bad)
 			}

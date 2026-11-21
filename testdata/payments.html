@@ -266,7 +266,6 @@ const bar = $('dg-bar');
 const banner = $('dg-path');
 const help = $('dg-help');
 const helpBtn = $('dg-keys');
-const hint = $('dg-hint');
 const NS = 'http://www.w3.org/2000/svg';
 const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 const modKey = mac ? '⌘' : 'Ctrl';
@@ -867,21 +866,10 @@ if (st.hover && !st.kbd) { st.hover = null; paint(); }
 if (!st.focus) hoverTip(null, ev);
 });
 stage.addEventListener('contextmenu', ev => { if (drag) ev.preventDefault(); });
-let hintT = 0;
 stage.addEventListener('wheel', ev => {
-const zoom = ev.ctrlKey || ev.metaKey;
-if (cfg.embed && !zoom) {
-if (hint) {
-hint.hidden = false;
-requestAnimationFrame(() => hint.classList.add('dg-show'));
-clearTimeout(hintT);
-hintT = setTimeout(() => hint.classList.remove('dg-show'), 1200);
-}
-return;
-}
 ev.preventDefault();
 const unit = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? size().h : 1;
-if (!zoom) {
+if (!ev.ctrlKey && !ev.metaKey) {
 let dx = ev.deltaX * unit, dy = ev.deltaY * unit;
 if (ev.shiftKey && !dx) { dx = dy; dy = 0; }
 panBy(-dx, -dy);
@@ -890,7 +878,6 @@ return;
 const dy = Math.max(-120, Math.min(120, ev.deltaY * unit)), p = local(ev);
 zoomAt(p.x, p.y, Math.exp(-dy * (ev.ctrlKey ? 0.012 : 0.002)));
 }, {passive: false});
-if (hint) hint.textContent = `Use ${modKey} + scroll to zoom`;
 let gScale = 1;
 stage.addEventListener('gesturestart', ev => { ev.preventDefault(); gScale = 1; });
 stage.addEventListener('gesturechange', ev => {

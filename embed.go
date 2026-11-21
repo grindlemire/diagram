@@ -135,9 +135,10 @@ func EmbedName(name string) EmbedOption {
 // The fragment includes the script unless NoScript is given; it defines
 // the element once per page. It makes no network requests. The embed is
 // as wide as its container, as tall as the diagram's aspect ratio makes
-// it (or Height), and has no layout shift. A plain mouse wheel scrolls the
-// page; Ctrl or ⌘ with the wheel, or a pinch, zooms. Pages can set
-// --diagram-background and --diagram-font on the element to blend it in.
+// it (or Height), and has no layout shift. Scrolling over it (a two-finger
+// trackpad drag) pans the diagram; Ctrl or ⌘ with the wheel, or a pinch,
+// zooms. Pages can set --diagram-background and --diagram-font on the
+// element to blend it in.
 func (d *Diagram) RenderEmbed(w io.Writer, opts ...EmbedOption) error {
 	cfg := embedConfig{renderConfig: defaultConfig(), toolbar: true}
 	for _, o := range opts {

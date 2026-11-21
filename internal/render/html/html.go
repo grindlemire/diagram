@@ -69,13 +69,13 @@ type chrome struct {
 // what they do. [K] is drawn as a key; [Mod] is ⌘ on Apple devices and
 // Ctrl elsewhere.
 func helpFor(c chrome) [][2]string {
-	zoom := "scroll, pinch or [+][−]"
+	pan := "drag, scroll or [←][↑][→][↓]"
 	if c.embed {
-		zoom = "[Mod] scroll, pinch or [+][−]"
+		pan = "drag or [←][↑][→][↓]"
 	}
 	rows := [][2]string{
-		{"drag or [←][↑][→][↓]", "Pan; hold [Shift] for bigger steps"},
-		{zoom, "Zoom"},
+		{pan, "Pan; hold [Shift] for bigger steps"},
+		{"[Mod] scroll, pinch or [+][−]", "Zoom"},
 		{"[0]", "Fit to screen"},
 		{"click or [Enter]", "Focus an element and its connections"},
 		{"[Tab] or [Shift][Tab]", "Move between nodes"},

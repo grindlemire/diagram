@@ -731,12 +731,15 @@ stage.addEventListener('pointerleave', ev => {
 });
 stage.addEventListener('contextmenu', ev => { if (drag) ev.preventDefault(); });
 
-// Wheel and trackpad zoom around the pointer; a pinch arrives as a wheel
-// event with ctrlKey set, in finer steps. In an embed a plain wheel
-// scrolls the page as usual, and a hint says how to zoom.
+// A plain wheel, or a two-finger trackpad drag, pans; Shift turns a
+// mouse wheel sideways. Ctrl or ⌘ with the wheel zooms around the
+// pointer, and so does a pinch, which arrives as a wheel event with
+// ctrlKey set, in finer steps. In an embed a plain wheel scrolls the
+// page as usual, and a hint says how to zoom.
 let hintT = 0;
 stage.addEventListener('wheel', ev => {
-  if (cfg.embed && !ev.ctrlKey && !ev.metaKey) {
+  const zoom = ev.ctrlKey || ev.metaKey;
+  if (cfg.embed && !zoom) {
     if (hint) {
       hint.hidden = false;
       requestAnimationFrame(() => hint.classList.add('dg-show'));
@@ -747,6 +750,12 @@ stage.addEventListener('wheel', ev => {
   }
   ev.preventDefault();
   const unit = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? size().h : 1;
+  if (!zoom) {
+    let dx = ev.deltaX * unit, dy = ev.deltaY * unit;
+    if (ev.shiftKey && !dx) { dx = dy; dy = 0; }
+    panBy(-dx, -dy);
+    return;
+  }
   const dy = Math.max(-120, Math.min(120, ev.deltaY * unit)), p = local(ev);
   zoomAt(p.x, p.y, Math.exp(-dy * (ev.ctrlKey ? 0.012 : 0.002)));
 }, {passive: false});

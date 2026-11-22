@@ -729,3 +729,45 @@ func TestNearlyAlignedEndsJoinStraight(t *testing.T) {
 		}
 	}
 }
+
+// Two edges from stacked nodes into one box get the box's ports in the
+// order their routes arrive in, whichever edge is declared first: the
+// upper node's edge doesn't cross the lower one's on its way in. A's
+// right side is taken by its edge to L, so its edge to T leaves from the
+// bottom and has to pass B's.
+func TestTangledEdgesSwapPorts(t *testing.T) {
+	for _, upperFirst := range []bool{true, false} {
+		b := newBuilder()
+		reg := b.group(nil, "reg", 0, 0)
+		a := b.node(reg, "A", 0, 40)
+		c := b.node(reg, "B", 0, 140)
+		env := b.group(nil, "env", 220, 0)
+		l := b.node(env, "L", 40, 40)
+		tt := b.node(env, "T", 220, 200)
+		b.edge(a, l)
+		if upperFirst {
+			b.edge(a, tt)
+			b.edge(c, tt)
+		} else {
+			b.edge(c, tt)
+			b.edge(a, tt)
+		}
+		res := b.route(t)
+		checkAll(t, res)
+		var pa, pc []model.Point
+		for _, e := range res.Edges {
+			switch {
+			case e.From.El == a && e.To.El == tt:
+				pa = e.Points
+			case e.From.El == c && e.To.El == tt:
+				pc = e.Points
+			}
+		}
+		if n := crossings(pa, pc); n > 0 {
+			t.Errorf("upper first %v: A→T %v and B→T %v cross %d times", upperFirst, pa, pc, n)
+		}
+		if p, q, ok := overlapping(pa, pc); ok {
+			t.Errorf("upper first %v: A→T %v and B→T %v share %v–%v", upperFirst, pa, pc, p, q)
+		}
+	}
+}

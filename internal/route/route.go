@@ -398,6 +398,9 @@ func (r *router) finish() error {
 		r.simplifyRoutes()
 		r.dejog()
 		r.nudge()
+		if routed <= maxImprove {
+			r.uncross()
+		}
 		r.relabel()
 	}
 	return err
@@ -527,7 +530,10 @@ type state struct {
 func (r *router) snapshot() state {
 	st := state{score: r.score(), segs: r.segs, rects: r.labels, rectEdge: r.labelEdge}
 	for _, j := range r.jobs {
-		st.edges = append(st.edges, *j.e)
+		// Copy the points: nudging moves them in place.
+		e := *j.e
+		e.Points = slices.Clone(e.Points)
+		st.edges = append(st.edges, e)
 		var ln layout.Line
 		if j.e.Label != nil {
 			ln = *j.e.Label
@@ -549,6 +555,8 @@ func (r *router) restore(st state) {
 	for i, j := range r.jobs {
 		lbl := j.e.Label
 		*j.e = st.edges[i]
+		// A state may be restored more than once.
+		j.e.Points = slices.Clone(j.e.Points)
 		j.e.Label = lbl
 		if lbl != nil {
 			*lbl = st.labels[i]

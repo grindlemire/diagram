@@ -60,3 +60,38 @@ func TestStraightenKeepsArrowStub(t *testing.T) {
 		t.Errorf("straighten(%v) = %v: last leg %.1f, want at least %.1f", pts, out, got, want)
 	}
 }
+
+// A small step between two nodes slightly out of line is removed by
+// sliding a port, also along a cylinder's curved top or bottom, where the
+// port moves along its stub as it slides.
+func TestStraightenSlidesPortsOnCurvedSides(t *testing.T) {
+	r, j := routed(t, node("A", model.ShapeCylinder, 0, 0), node("B", model.ShapeCylinder, 4, 200), model.SideBottom, model.SideTop)
+	r.centre(j.src)
+	r.centre(j.dst)
+	p, q := j.src.point, j.dst.point
+	mid := (p.Y + q.Y) / 2
+	pts := []model.Point{p, {X: p.X, Y: mid}, {X: q.X, Y: mid}, q}
+	out := r.straighten(j, pts)
+	if len(out) != 2 {
+		t.Fatalf("straighten(%v) = %v, want a straight line", pts, out)
+	}
+	if out[0].X != out[1].X {
+		t.Errorf("straighten(%v) = %v, not vertical", pts, out)
+	}
+	// The moved port sits on the outline.
+	for _, en := range []*end{j.src, j.dst} {
+		if got := r.portAt(en.box, en.side, en.pos); !near(got, en.point) {
+			t.Errorf("port at %v, outline at %v", en.point, got)
+		}
+	}
+}
+
+// A port under a figure's text starts inside the text's margin: the
+// segment leaving it doesn't count as running into the text.
+func TestMeasurePathLetsPortsLeaveTheirOwnText(t *testing.T) {
+	person := &model.Element{Label: "Customer", Desc: "Buys things", Shape: model.ShapePerson}
+	r, j := routed(t, person, node("B", model.ShapeBox, 0, 200), model.SideBottom, model.SideTop)
+	if m := r.measurePath(j, j.e.Points); !m.ok {
+		t.Errorf("measurePath(%v) is not ok", j.e.Points)
+	}
+}

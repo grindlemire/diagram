@@ -228,6 +228,15 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 			return m
 		}
 		for _, t := range r.texts {
+			// A port under a figure's text starts inside the text's
+			// margin, so the segment leaving it may cross the margin.
+			if t.owner == e.From && k == 0 || t.owner == e.To && k == last {
+				if clipLen(inflate(t.r, -0.5), a, b) > 0.01 {
+					m.ok = false
+					return m
+				}
+				continue
+			}
 			if clipLen(inflate(t.r, minClear), a, b) > 0.01 {
 				m.ok = false
 				return m
@@ -239,6 +248,8 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 				m.ok = false
 				return m
 			}
+			// The search keeps a little further off (its soft zone).
+			m.hug += clipLen(inflate(h.r, 4), a, b)
 		}
 		for _, lr := range r.labels {
 			if clipLen(inflate(lr, 2), a, b) > 0.01 {

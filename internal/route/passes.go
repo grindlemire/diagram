@@ -89,26 +89,32 @@ func (r *router) secondPass(j *job) {
 // (jogCost): a jog is worse than a crossing or running beside another
 // edge, which nudging can separate later.
 func (r *router) straighten(j *job, pts []model.Point) []model.Point {
-	slide := func(en *end, d model.Point) bool {
+	// slide returns where en's port lands when its segment moves by d, if
+	// it can move there.
+	slide := func(en *end, d model.Point) (model.Point, bool) {
 		pos := en.pos + d.X
 		if !horiz(en.side) {
 			pos = en.pos + d.Y
 		}
 		lo, hi := r.sideSpan(en.box, en.side)
 		if pos < lo-eps || pos > hi+eps {
-			return false
+			return model.Point{}, false
 		}
 		for _, o := range r.jobs {
 			for _, oe := range []*end{o.src, o.dst, o.selfEnd[0], o.selfEnd[1]} {
 				if oe != nil && oe != en && oe.box == en.box && oe.side == en.side &&
 					math.Abs(oe.pos-pos) < r.t.PortSpacing-eps {
-					return false
+					return model.Point{}, false
 				}
 			}
 		}
-		// Curved outlines move the port across the side as well.
-		np := r.portAt(en.box, en.side, pos)
-		return near(np, add(en.point, d))
+		// On a curved outline the port also moves along its stub, which
+		// then starts there.
+		np, want := r.portAt(en.box, en.side, pos), add(en.point, d)
+		if horiz(en.side) && math.Abs(np.X-want.X) > 1e-6 || !horiz(en.side) && math.Abs(np.Y-want.Y) > 1e-6 {
+			return model.Point{}, false
+		}
+		return np, true
 	}
 	// No move may shorten an end's straight run below the stub its port
 	// is granted, or below what it already has: the arrowhead and the
@@ -126,9 +132,9 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 				continue
 			}
 			// Move segment i by dd, keeping end stubs of at least s0 and
-			// s1; returns the new points and the end whose port slides,
-			// if any.
-			try := func(i int, dd model.Point, s0, s1 float64) ([]model.Point, *end, bool) {
+			// s1; returns the new points, the end whose port slides, if
+			// any, and where that port lands.
+			try := func(i int, dd model.Point, s0, s1 float64) ([]model.Point, *end, model.Point, bool) {
 				var en *end
 				switch {
 				case i == 0:
@@ -136,39 +142,48 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 				case i+1 == len(pts)-1:
 					en = j.dst
 				}
-				if en != nil && !slide(en, dd) {
-					return nil, nil, false
-				}
 				c := slices.Clone(pts)
 				c[i], c[i+1] = add(c[i], dd), add(c[i+1], dd)
+				var np model.Point
+				if en != nil {
+					var ok bool
+					if np, ok = slide(en, dd); !ok {
+						return nil, nil, np, false
+					}
+					if en == j.src {
+						c[0] = np
+					} else {
+						c[len(c)-1] = np
+					}
+				}
 				c = simplify(c)
 				// The route must still leave and arrive along its ports'
 				// stubs.
 				n := len(c)
 				if n < 2 || dirBetween(c[0], c[1]) != j.src.travel || dirBetween(c[n-2], c[n-1]) != j.dst.travel.opposite() ||
 					seglen(c[0], c[1]) < s0 || seglen(c[n-2], c[n-1]) < s1 {
-					return nil, nil, false
+					return nil, nil, np, false
 				}
 				// A jog costs more than a crossing or a stretch beside
 				// another edge.
 				m := r.measurePath(j, c)
 				if !m.ok || cur.ok && m.cost >= cur.cost+jogCost {
-					return nil, nil, false
+					return nil, nil, np, false
 				}
-				return c, en, true
+				return c, en, np, true
 			}
 			var best []model.Point
 			var bestEnd *end
-			var bestMove model.Point
+			var bestMove, bestPort model.Point
 			bestCost := inf
 			moves := func(s0, s1 float64) {
 				for _, o := range []struct {
 					i int
 					d model.Point
 				}{{k - 1, d}, {k + 1, model.Point{X: -d.X, Y: -d.Y}}} {
-					if c, en, ok := try(o.i, o.d, s0, s1); ok {
+					if c, en, np, ok := try(o.i, o.d, s0, s1); ok {
 						if cost := r.measurePath(j, c).cost; cost < bestCost {
-							best, bestEnd, bestMove, bestCost = c, en, o.d, cost
+							best, bestEnd, bestMove, bestPort, bestCost = c, en, o.d, np, cost
 						}
 					}
 				}
@@ -182,7 +197,7 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 			if best != nil {
 				if bestEnd != nil {
 					bestEnd.pos += bestMove.X + bestMove.Y
-					bestEnd.point = add(bestEnd.point, bestMove)
+					bestEnd.point = bestPort
 				}
 				pts = best
 				changed = true

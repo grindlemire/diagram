@@ -710,3 +710,22 @@ func TestArrowIntoGroupPaddingKeepsItsStub(t *testing.T) {
 }
 
 func seglen(a, b model.Point) float64 { return math.Abs(b.X-a.X) + math.Abs(b.Y-a.Y) }
+
+// Two nodes a few pixels out of line are joined by a straight edge: one
+// port slides along its side rather than the route stepping sideways,
+// also on a cylinder's curved top and bottom.
+func TestNearlyAlignedEndsJoinStraight(t *testing.T) {
+	for _, shape := range []model.Shape{model.ShapeBox, model.ShapeCylinder} {
+		b := newBuilder()
+		a := b.add(nil, &model.Element{Kind: model.KindNode, Label: "A", Shape: shape, X: 0, Y: 0,
+			Width: model.Some(100.0), Height: model.Some(60.0)})
+		c := b.add(nil, &model.Element{Kind: model.KindNode, Label: "B", Shape: shape, X: 4, Y: 200,
+			Width: model.Some(100.0), Height: model.Some(60.0)})
+		b.edge(a, c, exit(model.SideBottom), enter(model.SideTop))
+		res := b.route(t)
+		checkAll(t, res)
+		if pts := res.Edges[0].Points; len(pts) != 2 {
+			t.Errorf("shape %v: route %v has bends, want a straight line", shape, pts)
+		}
+	}
+}

@@ -85,9 +85,9 @@ func (r *router) secondPass(j *job) {
 // between two that run the same way, which makes the route step sideways
 // and carry on. One of the two parallel segments moves in line with the
 // other, sliding a port along its side if it is attached to one, when
-// that hits nothing and costs less than the jog (jogCost): a jog is worse
-// than a crossing or running beside another edge, which nudging can
-// separate later.
+// that hits nothing, keeps both ends' stubs and costs less than the jog
+// (jogCost): a jog is worse than a crossing or running beside another
+// edge, which nudging can separate later.
 func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 	slide := func(en *end, d model.Point) bool {
 		pos := en.pos + d.X
@@ -110,6 +110,12 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 		np := r.portAt(en.box, en.side, pos)
 		return near(np, add(en.point, d))
 	}
+	// No move may shorten an end's straight run below the stub its port
+	// is granted, or below what it already has: the arrowhead and the
+	// bend need it.
+	n := len(pts)
+	stub0 := math.Max(r.c/2, math.Min(r.endStub(j, j.src, true), seglen(pts[0], pts[1]))-0.5)
+	stub1 := math.Max(r.c/2, math.Min(r.endStub(j, j.dst, false), seglen(pts[n-2], pts[n-1]))-0.5)
 	short := 2 * r.c
 	for changed := true; changed; {
 		changed = false
@@ -119,9 +125,10 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 			if seglen(pts[k], pts[k+1]) >= short || dirBetween(pts[k-1], pts[k]) != dirBetween(pts[k+1], pts[k+2]) {
 				continue
 			}
-			// Move segment i by dd; returns the new points and the end
-			// whose port slides, if any.
-			try := func(i int, dd model.Point) ([]model.Point, *end, bool) {
+			// Move segment i by dd, keeping end stubs of at least s0 and
+			// s1; returns the new points and the end whose port slides,
+			// if any.
+			try := func(i int, dd model.Point, s0, s1 float64) ([]model.Point, *end, bool) {
 				var en *end
 				switch {
 				case i == 0:
@@ -139,7 +146,7 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 				// stubs.
 				n := len(c)
 				if n < 2 || dirBetween(c[0], c[1]) != j.src.travel || dirBetween(c[n-2], c[n-1]) != j.dst.travel.opposite() ||
-					seglen(c[0], c[1]) < r.c/2 || seglen(c[n-2], c[n-1]) < r.c/2 {
+					seglen(c[0], c[1]) < s0 || seglen(c[n-2], c[n-1]) < s1 {
 					return nil, nil, false
 				}
 				// A jog costs more than a crossing or a stretch beside
@@ -154,15 +161,23 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 			var bestEnd *end
 			var bestMove model.Point
 			bestCost := inf
-			for _, o := range []struct {
-				i int
-				d model.Point
-			}{{k - 1, d}, {k + 1, model.Point{X: -d.X, Y: -d.Y}}} {
-				if c, en, ok := try(o.i, o.d); ok {
-					if cost := r.measurePath(j, c).cost; cost < bestCost {
-						best, bestEnd, bestMove, bestCost = c, en, o.d, cost
+			moves := func(s0, s1 float64) {
+				for _, o := range []struct {
+					i int
+					d model.Point
+				}{{k - 1, d}, {k + 1, model.Point{X: -d.X, Y: -d.Y}}} {
+					if c, en, ok := try(o.i, o.d, s0, s1); ok {
+						if cost := r.measurePath(j, c).cost; cost < bestCost {
+							best, bestEnd, bestMove, bestCost = c, en, o.d, cost
+						}
 					}
 				}
+			}
+			moves(stub0, stub1)
+			// Where there is no room for both stubs, a jog too short to
+			// round reads as a notch, which is worse than a short stub.
+			if best == nil && seglen(pts[k], pts[k+1]) < 2*r.t.EdgeCornerRad {
+				moves(r.c/2, r.c/2)
 			}
 			if best != nil {
 				if bestEnd != nil {
@@ -244,6 +259,10 @@ func (r *router) separate(j *job, pts []model.Point) []model.Point {
 		}
 		return best, found
 	}
+	// The end segments keep the stubs their ports are granted.
+	n := len(pts)
+	stub0 := math.Min(r.endStub(j, j.src, true), seglen(pts[0], pts[1])) - 0.5
+	stub1 := math.Min(r.endStub(j, j.dst, false), seglen(pts[n-2], pts[n-1])) - 0.5
 	for k := 1; k+2 < len(pts); k++ {
 		a, b := pts[k], pts[k+1]
 		d, ok := closest(a, b, off-0.5)
@@ -265,6 +284,9 @@ func (r *router) separate(j *job, pts []model.Point) []model.Point {
 			na, nb := add(a, mv), add(b, mv)
 			// The neighbouring segments must keep their direction.
 			if !sameDir(pts[k-1], a, na) || !sameDir(pts[k+2], b, nb) {
+				continue
+			}
+			if k == 1 && seglen(pts[0], na) < stub0 || k+2 == n-1 && seglen(nb, pts[n-1]) < stub1 {
 				continue
 			}
 			if !clear(pts[k-1], na) || !clear(na, nb) || !clear(nb, pts[k+2]) {

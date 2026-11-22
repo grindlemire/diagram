@@ -481,6 +481,11 @@ func (r *router) stubLen(j *job, p model.Point, d dir, self *layout.Box, s model
 	return stub
 }
 
+// endStub is the stub en, one of j's ends, is granted now.
+func (r *router) endStub(j *job, en *end, src bool) float64 {
+	return r.stubLen(j, en.point, en.travel, en.box, en.side, r.wantStub(j, src))
+}
+
 // spread assigns final port positions to every end, spacing ends that share
 // a side and ordering them so their routes don't cross.
 func (r *router) spread() {

@@ -81,13 +81,15 @@ func (r *router) secondPass(j *job) {
 	r.addPath(j.i, e.Points)
 }
 
-// straighten removes jogs: a short segment (under twice the clearance)
-// between two that run the same way, which makes the route step sideways
-// and carry on. One of the two parallel segments moves in line with the
-// other, sliding a port along its side if it is attached to one, when
-// that hits nothing, keeps both ends' stubs and costs less than the jog
-// (jogCost): a jog is worse than a crossing or running beside another
-// edge, which nudging can separate later.
+// straighten removes jogs and hooks: a short segment (under twice the
+// clearance) between two that run the same way, which makes the route
+// step sideways and carry on, or opposite ways, which makes it overshoot
+// and double back. One of the two outer segments moves in line with the
+// other, sliding a port along its side if it is attached to one. A move
+// is kept when it hits nothing, keeps both ends' stubs, runs on top of
+// no more of another edge than before (two edges on one line read as one;
+// one merely close by, nudging separates later), and costs less than the
+// jog (jogCost): a jog is worse than a crossing.
 func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 	// slide returns where en's port lands when its segment moves by d, if
 	// it can move there.
@@ -128,7 +130,8 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 		cur := r.measurePath(j, pts)
 		for k := 1; k+2 < len(pts); k++ {
 			d := model.Point{X: pts[k+1].X - pts[k].X, Y: pts[k+1].Y - pts[k].Y}
-			if seglen(pts[k], pts[k+1]) >= short || dirBetween(pts[k-1], pts[k]) != dirBetween(pts[k+1], pts[k+2]) {
+			before, after := dirBetween(pts[k-1], pts[k]), dirBetween(pts[k+1], pts[k+2])
+			if seglen(pts[k], pts[k+1]) >= short || before != after && before != after.opposite() {
 				continue
 			}
 			// Move segment i by dd, keeping end stubs of at least s0 and
@@ -158,16 +161,16 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 				}
 				c = simplify(c)
 				// The route must still leave and arrive along its ports'
-				// stubs.
+				// stubs, and never turn back on itself.
 				n := len(c)
-				if n < 2 || dirBetween(c[0], c[1]) != j.src.travel || dirBetween(c[n-2], c[n-1]) != j.dst.travel.opposite() ||
-					seglen(c[0], c[1]) < s0 || seglen(c[n-2], c[n-1]) < s1 {
+				if n < 2 || n >= len(pts) || dirBetween(c[0], c[1]) != j.src.travel || dirBetween(c[n-2], c[n-1]) != j.dst.travel.opposite() ||
+					seglen(c[0], c[1]) < s0 || seglen(c[n-2], c[n-1]) < s1 || reverses(c) {
 					return nil, nil, np, false
 				}
-				// A jog costs more than a crossing or a stretch beside
-				// another edge.
+				// A jog costs more than a crossing, but not more than
+				// merging into another edge's line.
 				m := r.measurePath(j, c)
-				if !m.ok || cur.ok && m.cost >= cur.cost+jogCost {
+				if !m.ok || m.onTop > cur.onTop+0.5 || cur.ok && m.cost >= cur.cost+jogCost {
 					return nil, nil, np, false
 				}
 				return c, en, np, true
@@ -206,6 +209,16 @@ func (r *router) straighten(j *job, pts []model.Point) []model.Point {
 		}
 	}
 	return pts
+}
+
+// reverses reports whether a route turns straight back on itself anywhere.
+func reverses(pts []model.Point) bool {
+	for k := 0; k+2 < len(pts); k++ {
+		if dirBetween(pts[k], pts[k+1]) == dirBetween(pts[k+1], pts[k+2]).opposite() {
+			return true
+		}
+	}
+	return false
 }
 
 // separate moves the interior segments of a new route away from earlier

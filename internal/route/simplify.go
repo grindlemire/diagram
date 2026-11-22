@@ -182,6 +182,7 @@ type pathMetrics struct {
 	ok        bool    // touches no obstacle
 	crossings int     // proper crossings with other edges
 	near      float64 // length closer than ParallelOffset to other edges
+	onTop     float64 // length on the same line as another edge, which reads as one line
 	hug       float64 // length inside the clearance of nodes that aren't ends
 	outside   float64 // length outside the diagram's bounds
 	cost      float64 // length plus the above, weighted as in the search
@@ -279,6 +280,7 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 				m.crossings++
 			}
 			m.near += nearLen(a, b, s.a, s.b, r.t.ParallelOffset-0.5)
+			m.onTop += nearLen(a, b, s.a, s.b, onTopDist)
 		})
 	}
 	m.cost += bendCost*float64(len(pts)-2) + crossCost*float64(m.crossings) +
@@ -307,6 +309,9 @@ func (r *router) jobBounds(j *job) layout.Rect {
 	}
 	return b
 }
+
+// onTopDist is how close two parallel lines are taken to be one line.
+const onTopDist = 2
 
 // crossesAny reports whether segments ab and cd cross at a point inside
 // both (any orientation).

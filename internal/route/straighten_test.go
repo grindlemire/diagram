@@ -95,3 +95,48 @@ func TestMeasurePathLetsPortsLeaveTheirOwnText(t *testing.T) {
 		t.Errorf("measurePath(%v) is not ok", j.e.Points)
 	}
 }
+
+// A route that overshoots the column of its port and doubles back to fit
+// the arrow's stub is folded: the approach moves over by the hook's depth
+// and the route turns once into the port.
+func TestStraightenFoldsHooks(t *testing.T) {
+	r, j := routed(t, node("A", model.ShapeBox, 0, 0), node("B", model.ShapeBox, 200, 200), model.SideRight, model.SideTop)
+	r.centre(j.src)
+	r.centre(j.dst)
+	p, q := j.src.point, j.dst.point
+	stub := r.stubLen(j, q, j.dst.travel, j.dst.box, j.dst.side, r.wantStub(j, false))
+	turn := q.Y - stub - 1 // where the arrow's straight run starts
+	pts := []model.Point{
+		p, {X: p.X + 30, Y: p.Y},
+		{X: p.X + 30, Y: turn + 6}, {X: q.X + 5, Y: turn + 6}, // approach, too close to B
+		{X: q.X + 5, Y: turn}, {X: q.X, Y: turn}, // the hook
+		q,
+	}
+	out := r.straighten(j, pts)
+	want := []model.Point{p, {X: p.X + 30, Y: p.Y}, {X: p.X + 30, Y: turn}, {X: q.X, Y: turn}, q}
+	if len(out) != len(want) {
+		t.Fatalf("straighten(%v) = %v, want %v", pts, out, want)
+	}
+	for i := range want {
+		if !near(out[i], want[i]) {
+			t.Fatalf("straighten(%v) = %v, want %v", pts, out, want)
+		}
+	}
+}
+
+func TestJogCountCountsHooks(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		pts  []model.Point
+		want int
+	}{
+		{"step", []model.Point{{X: 0, Y: 0}, {X: 0, Y: 50}, {X: 5, Y: 50}, {X: 5, Y: 100}}, 1},
+		{"hook", []model.Point{{X: 0, Y: 0}, {X: 50, Y: 0}, {X: 50, Y: -5}, {X: 20, Y: -5}, {X: 20, Y: -50}}, 1},
+		{"long U", []model.Point{{X: 0, Y: 0}, {X: 50, Y: 0}, {X: 50, Y: 80}, {X: 0, Y: 80}}, 0},
+		{"L", []model.Point{{X: 0, Y: 0}, {X: 50, Y: 0}, {X: 50, Y: 80}}, 0},
+	} {
+		if got := jogCount(tc.pts, 24); got != tc.want {
+			t.Errorf("%s: jogCount(%v) = %d, want %d", tc.name, tc.pts, got, tc.want)
+		}
+	}
+}

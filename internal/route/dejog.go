@@ -10,8 +10,9 @@ import (
 // may cross another edge or two to get rid of one.
 const jogCost = 300
 
-// jogCount counts a route's jogs: segments shorter than short between two
-// that run the same way.
+// jogCount counts a route's jogs and hooks: segments shorter than short
+// between two that run the same way (a step sideways) or opposite ways
+// (an overshoot that doubles back).
 func jogCount(pts []model.Point, short float64) int {
 	n := 0
 	for k := 1; k+2 < len(pts); k++ {
@@ -19,7 +20,7 @@ func jogCount(pts []model.Point, short float64) int {
 		if seglen(b, c) >= short {
 			continue
 		}
-		if (b.X-a.X)*(d.X-c.X)+(b.Y-a.Y)*(d.Y-c.Y) > 0 {
+		if (b.X-a.X)*(d.X-c.X)+(b.Y-a.Y)*(d.Y-c.Y) != 0 {
 			n++
 		}
 	}

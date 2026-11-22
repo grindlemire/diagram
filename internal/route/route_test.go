@@ -658,3 +658,55 @@ func TestBottomPortsSitBelowFigureText(t *testing.T) {
 		t.Errorf("enters on %v, want bottom", res.Edges[0].EnterSide)
 	}
 }
+
+// boxOf returns the layout box of element el.
+func boxOf(t *testing.T, res *layout.Result, el *model.Element) *layout.Box {
+	t.Helper()
+	for _, bx := range res.Boxes {
+		if bx.El == el {
+			return bx
+		}
+	}
+	t.Fatalf("no box for %s", el.Describe())
+	return nil
+}
+
+// arrowStub is the straight run an arrowhead end wants: the head, the
+// rounding of the bend before it and a little line between.
+func arrowStub(th *themes.Theme) float64 {
+	return 0.8*th.ArrowSize + th.EdgeCornerRad + 4
+}
+
+// An arrow pinned into a node that sits in its group's padding has no
+// room to turn inside the padding: the bend and the arrowhead don't fit
+// and the route would run along the group's border. It crosses the border
+// instead and keeps its whole straight run.
+func TestArrowIntoGroupPaddingKeepsItsStub(t *testing.T) {
+	for _, side := range []model.Side{model.SideLeft, model.SideTop} {
+		t.Run(side.String(), func(t *testing.T) {
+			b := newBuilder()
+			src := b.node(nil, "src", 300, 0)
+			g := b.group(nil, "group", 0, 150)
+			dst := b.node(g, "dst", 0, 40)
+			b.edge(src, dst, exit(model.SideBottom), enter(side))
+			res := b.route(t)
+			checkAll(t, res)
+			pts := res.Edges[0].Points
+			n := len(pts)
+			if got, want := seglen(pts[n-2], pts[n-1]), arrowStub(themes.Light); got < want-eps {
+				t.Errorf("last leg %v is %.1f long, want at least %.1f", pts, got, want)
+			}
+			// The turn into the last leg keeps off the group's border.
+			gr := boxOf(t, res, g).Rect
+			border, lane := gr.X, pts[n-2].X
+			if side == model.SideTop {
+				border, lane = gr.Y, pts[n-2].Y
+			}
+			if d := math.Abs(lane - border); d < themes.Light.EdgeClearance/2-eps {
+				t.Errorf("route %v turns %.1f from the group's border at %.1f", pts, d, border)
+			}
+		})
+	}
+}
+
+func seglen(a, b model.Point) float64 { return math.Abs(b.X-a.X) + math.Abs(b.Y-a.Y) }

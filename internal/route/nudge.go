@@ -466,9 +466,9 @@ func (r *router) freeRange(m *member, vertical bool) (lo, hi float64) {
 		}
 		d := 2*r.c + 1
 		if q == 0 {
-			d = r.wantStub(m.j, true)
+			d = r.nudgeStub(m.j, true)
 		} else if q == len(pts)-1 {
-			d = r.wantStub(m.j, false)
+			d = r.nudgeStub(m.j, false)
 		}
 		if v < m.c {
 			lo = math.Max(lo, v+math.Min(d, m.c-v))
@@ -496,6 +496,21 @@ func (r *router) freeRange(m *member, vertical bool) (lo, hi float64) {
 		lo, hi = math.Max(lo, math.Min(a, m.c)), math.Min(hi, math.Max(z, m.c))
 	}
 	return lo, hi
+}
+
+// nudgeStub is the stub nudging keeps at one end of j: the one its port is
+// granted, which may run past a group border (clearBorders), and at least
+// the one it wants.
+func (r *router) nudgeStub(j *job, src bool) float64 {
+	en := j.dst
+	if src {
+		en = j.src
+	}
+	want := r.wantStub(j, src)
+	if en == nil {
+		return want
+	}
+	return math.Max(want, r.endStub(j, en, src))
 }
 
 // maxLane is the widest spacing nudging gives parallel edges, so two of

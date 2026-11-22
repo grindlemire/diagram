@@ -459,6 +459,9 @@ func (r *router) stubLen(j *job, p model.Point, d dir, self *layout.Box, s model
 		hit(l)
 	}
 	stub := inset + math.Min(want, math.Max(free-inset, 0)/2)
+	if j != nil {
+		stub = r.clearBorders(j, p, d, self, stub, free)
+	}
 	// A route confined to a group can't run its stub past the group's
 	// inner margin.
 	if j != nil && j.region != nil {
@@ -476,6 +479,61 @@ func (r *router) stubLen(j *job, p model.Point, d dir, self *layout.Box, s model
 		}
 		if wall > 0 {
 			stub = math.Min(stub, wall)
+		}
+	}
+	return stub
+}
+
+// clearBorders lengthens a stub that would end within half the clearance
+// of the border of a group the route has to leave anyway, one holding self
+// but not the edge's other end, so that it crosses the border and turns
+// half a clearance beyond it, where nudging keeps routes off borders.
+// Turning that close to the border would run the route along it, or leave
+// too short a stub for the arrowhead. The search's soft costs still move
+// the turn further out where there is room.
+// The stub isn't lengthened into another group or to within the
+// clearance of the obstacle ahead, free away.
+func (r *router) clearBorders(j *job, p model.Point, d dir, self *layout.Box, stub, free float64) float64 {
+	other := j.e.From
+	if self == j.e.From {
+		other = j.e.To
+	}
+	// along is how far p is from rc's side that d runs towards, and
+	// whether p's ray along d meets that side.
+	along := func(rc layout.Rect) (float64, bool) {
+		switch d {
+		case dirLeft:
+			return p.X - rc.X, p.Y > rc.Y && p.Y < rc.Bottom()
+		case dirRight:
+			return rc.Right() - p.X, p.Y > rc.Y && p.Y < rc.Bottom()
+		case dirUp:
+			return p.Y - rc.Y, p.X > rc.X && p.X < rc.Right()
+		}
+		return rc.Bottom() - p.Y, p.X > rc.X && p.X < rc.Right()
+	}
+	foreign := func(q model.Point) bool {
+		for _, g := range r.groups {
+			if !within(self.El, g.El) && strictlyInside(inflate(g.Rect, r.c/2), q) {
+				return true
+			}
+		}
+		return false
+	}
+	for changed := true; changed; {
+		changed = false
+		for _, g := range r.groups {
+			if g == self || !within(self.El, g.El) || within(other.El, g.El) {
+				continue
+			}
+			dist, ok := along(g.Rect)
+			if !ok || dist <= 0 || stub <= dist-r.c/2 || stub >= dist+r.c/2 {
+				continue
+			}
+			ext := dist + r.c/2
+			if ext > free-r.c || foreign(step(p, d, ext)) {
+				continue
+			}
+			stub, changed = ext, true
 		}
 	}
 	return stub

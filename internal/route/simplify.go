@@ -195,6 +195,7 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 	c := r.c
 	isEnd := func(b *layout.Box) bool { return b == e.From || b == e.To }
 	last := len(pts) - 2
+	inb := r.jobBounds(j)
 	for k := 0; k+1 < len(pts); k++ {
 		a, b := pts[k], pts[k+1]
 		l := seglen(a, b)
@@ -261,7 +262,7 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 				return m
 			}
 		}
-		m.outside += l - clipLen(r.bounds, a, b)
+		m.outside += l - clipLen(inb, a, b)
 		r.segsNear(inflate(segRect(a, b), r.t.ParallelOffset), func(s seg) {
 			if crossesAny(a, b, s.a, s.b) {
 				m.crossings++
@@ -272,6 +273,28 @@ func (r *router) measurePath(j *job, pts []model.Point) pathMetrics {
 	m.cost += bendCost*float64(len(pts)-2) + crossCost*float64(m.crossings) +
 		clearCost*m.hug + overlapCost*m.near + outsideCost*m.outside
 	return m
+}
+
+// jobBounds is the diagram's bounds grown to where j's stubs end when
+// they were lengthened across a group border, as the search counts them:
+// a route whose stub ends outside has to turn there.
+func (r *router) jobBounds(j *job) layout.Rect {
+	b := r.bounds
+	for _, en := range []*end{j.src, j.dst} {
+		if en == nil {
+			continue
+		}
+		// Only a port near the edge can have its stub end outside.
+		if in := inflate(b, -4*r.c); strictlyInside(in, en.point) {
+			continue
+		}
+		src := en == j.src
+		if st := r.endStub(j, en, src); st > r.wantStub(j, src)+eps {
+			q := step(en.point, en.travel, st)
+			b = union(b, layout.Rect{X: q.X, Y: q.Y})
+		}
+	}
+	return b
 }
 
 // crossesAny reports whether segments ab and cd cross at a point inside

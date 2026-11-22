@@ -393,8 +393,19 @@ func (r *router) build(j *job, srcs, dsts []cand, level int, window *layout.Rect
 		}
 	}
 
-	g.outside(r.bounds, func(m *float64) { *m += outsideCost })
-	g.crossings(r.bounds, outsideCross)
+	// Where an end's only port has a stub lengthened across a group border
+	// (clearBorders) that ends past the diagram's bounds, the route has to
+	// turn out there, so the lane it turns into isn't charged as outside.
+	// While a side is still being chosen, it is.
+	inb := r.bounds
+	for k, cs := range [][]cand{srcs, dsts} {
+		if len(cs) == 1 && cs[0].stub > r.wantStub(j, k == 0)+eps {
+			q := step(cs[0].p, cs[0].travel, cs[0].stub)
+			inb = union(inb, layout.Rect{X: q.X, Y: q.Y})
+		}
+	}
+	g.outside(inb, func(m *float64) { *m += outsideCost })
+	g.crossings(inb, outsideCross)
 	if j.region != nil {
 		in := inflate(j.region.Rect, -c/2)
 		if level == 0 {
